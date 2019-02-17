@@ -7,6 +7,10 @@ using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Microsoft.CSharp.RuntimeBinder;
+
 namespace GoogleSearch
 {
     public class GoogleSearch: ISearch
@@ -52,22 +56,13 @@ namespace GoogleSearch
             Stream raw = response.GetResponseStream();
 
             StreamReader s = new StreamReader(raw);
-            string value = string.Empty;
-            string key = string.Empty;
-            long result = 0;
+           // long result = 0;
             string json = s.ReadToEnd();
 
-
-            Regex reg = new Regex("\"totalResults\": \"(\\d+)\"");
-            MatchCollection mc = reg.Matches(json);
-            foreach (Match m in mc)
-            {
-                key = m.Groups[0].Value;
-                value = m.Groups[1].Value;
-                if (long.TryParse(value, out result)) break;
-            }
-
-            return string.IsNullOrEmpty(value) ? 0 : long.Parse(value);//list.Count;
+            dynamic  details = JObject.Parse(json);
+            object valor = details.searchInformation.totalResults; //searchInformation.totalResults
+            
+            return  long.Parse(valor.ToString());//list.Count;
 
         }
 

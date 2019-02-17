@@ -6,8 +6,12 @@ using System.Text;
 using System.Collections;
 using System.Reflection;
 using System.Configuration;
+
 namespace SearchfightCore
 {
+    /// <summary>
+    /// Sigleton design pattern
+    /// </summary>
     public class SearchManager
     {
         private List<ISearch> _Searchers = new List<ISearch>();

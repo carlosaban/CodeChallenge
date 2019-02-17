@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace MSNSearch
 {
@@ -51,7 +52,6 @@ namespace MSNSearch
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            //client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "341c1460842d45858fb53114888223c5");
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", this._Parameters["Ocp-Apim-Subscription-Key"].ToString());
 
             // Request parameters
@@ -60,22 +60,10 @@ namespace MSNSearch
 
             string json = await client.GetStringAsync(uri);
 
-            string value = string.Empty;
-            string key = string.Empty;
-            long result = 0;
-            
+            dynamic details = JObject.Parse(json);
+            object valor = details.webPages.totalEstimatedMatches; //searchInformation.totalResults
 
-            Regex reg = new Regex("\"totalEstimatedMatches\": (\\d+)");
-            MatchCollection mc = reg.Matches(json);
-            foreach (Match m in mc)
-            {
-                key = m.Groups[0].Value;
-                value = m.Groups[1].Value;
-                if (long.TryParse(value, out result)) break;
-            }
-
-            return  string.IsNullOrEmpty(value) ? 0 : long.Parse(value);//list.Count;
-            
+            return long.Parse(valor.ToString());//list.Count;
         }
 
         #endregion
